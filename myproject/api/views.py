@@ -88,7 +88,24 @@ class RegisterView(APIView):
     
 
     
+class UserView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
 
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('ExpiredSignatureError!')
+        
+        
+        user_list = Users.objects.all()
+        serialized_users = UserSerializer(user_list, many=True).data
+        return Response(serialized_users)
+        
 
 
 class MessageView(APIView):
@@ -214,6 +231,9 @@ class MessageView(APIView):
 
         # Return the serialized unread messages **after** updating
         return Response(unread_messages_list)
+    
+
+
     def delete(self, request):
         """
         Deletes a message.
