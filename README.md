@@ -5,6 +5,27 @@ This document provides a comprehensive overview of the available API endpoints w
 ## Authentication
 
 To access most endpoints, valid JWT authentication is mandatory. You can obtain a JWT token by sending a POST request to `/login` with your email and password credentials.
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+
+
+
+
+
+## Registration
+
+To register a new user, send a POST request to `/register` with the following JSON payload:
+
+```json
+{
+  "username": "username123",
+  "email": "user@example.com",
+  "password": "password123"
+}
 
 ## Endpoints
 
