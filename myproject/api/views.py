@@ -1,11 +1,31 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework import status
 from message.serializers import UserSerializer,MessageSerializer
 from message.models import Users,MessageDetails
 import jwt, datetime
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+
+
+
+
+def get_payload(request):
+
+    token = request.COOKIES.get('jwt')
+
+    if not token:
+        raise AuthenticationFailed('Unauthenticated!')
+
+    try:
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+
+    except jwt.ExpiredSignatureError:
+        raise AuthenticationFailed('ExpiredSignatureError!')
+    return payload
+    
+
 
 class LoginView(APIView):
     """
@@ -106,18 +126,9 @@ class UserView(APIView):
             AuthenticationFailed: If the user is not authenticated or the JWT is invalid.
         """
 
-        token = request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('ExpiredSignatureError!')
         
-        
+        payload = get_payload(request)
+
         user_list = Users.objects.all()
         serialized_users = UserSerializer(user_list, many=True).data
         return Response(serialized_users)
@@ -154,16 +165,8 @@ class MessageView(APIView):
         
         
         """
-        token = request.COOKIES.get('jwt')
+        payload = get_payload(request)
 
-        if not token:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-            
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('ExpiredSignatureError!')
 
              # Get current date and time
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -198,53 +201,38 @@ class MessageView(APIView):
                 - Error message indicating missing or invalid JWT token.
         """
 
-        token = request.COOKIES.get('jwt')
+        payload = get_payload(request)
 
-        if not token:
-            raise AuthenticationFailed('Unauthenticated!')
 
-        try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('ExpiredSignatureError!')
-        
-
-        
         unread_messages = MessageDetails.objects.filter(receiver_email=payload['email'])
+       
 
+        # Check for query parameters
+        unread_messages_filter = request.query_params.get('unread_messages')
+        message_by_id = request.query_params.get('message_by_id')
+        # Filter only unread messages if requested
+        if unread_messages_filter == "unread":
+            unread_messages = unread_messages.filter(is_read='unread')
 
+       
 
-        if "unread_messages" in request.data and request.data["unread_messages"] == "read_only":
-            unread_messages = unread_messages.filter(is_read="unread")
-
-
-      
-
-    # Filter for a specific message by ID if requested
-        if "message_by_id" in request.data:
+        # Filter for a specific message by ID if requested
+        if message_by_id:
             try:
-                message_id = request.data["message_by_id"]
+                message_id = message_by_id
                 unread_messages = unread_messages.filter(id=message_id)
             except ValueError:
                 return Response(
-                {'message': 'Invalid message_by_id. Please provide a valid integer.'},
-                status=400
-            )
+                    {'message': 'Invalid message_by_id. Please provide a valid integer.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        
-
-    
         unread_messages_list = list(unread_messages.values())
-        
-        
-       
-
-       
 
         # Update the is_read field for all unread messages
         with transaction.atomic():
-            unread_messages.update(is_read="read")
+            unread_messages.update(is_read='read')
+           
 
         # Return the serialized unread messages **after** updating
         return Response(unread_messages_list)
@@ -273,16 +261,8 @@ class MessageView(APIView):
                 - Error message indicating message not found or unauthorized to delete.
         """
 
-        token = request.COOKIES.get('jwt')
+        payload = get_payload(request)
 
-        if not token:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('ExpiredSignatureError!')
 
         message_id = request.data.get('id_message')
 
