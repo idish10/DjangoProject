@@ -89,7 +89,23 @@ class RegisterView(APIView):
 
     
 class UserView(APIView):
+    """
+    API view for retrieving a list of users.
+
+    Requires valid JWT authentication.
+    """
+
     def get(self, request):
+        """
+        Handles GET requests for retrieving users.
+
+        Authenticates the user, retrieves a list of users from the database,
+        serializes them, and returns them in the response.
+
+        Raises:
+            AuthenticationFailed: If the user is not authenticated or the JWT is invalid.
+        """
+
         token = request.COOKIES.get('jwt')
 
         if not token:
@@ -203,6 +219,7 @@ class MessageView(APIView):
             unread_messages = unread_messages.filter(is_read="unread")
 
 
+      
 
     # Filter for a specific message by ID if requested
         if "message_by_id" in request.data:
