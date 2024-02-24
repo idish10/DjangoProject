@@ -5,28 +5,33 @@ This document provides a comprehensive overview of the available API endpoints w
 ## Authentication
 
 To access most endpoints, valid JWT authentication is mandatory. You can obtain a JWT token by sending a POST request to `/login` with your email and password credentials.
-```json
-{
+
+
+
+
+
+# Message API Readme
+
+This document provides a comprehensive overview of the available API endpoints within the message application.
+
+## Authentication
+
+To access most endpoints, valid JWT authentication is mandatory. You can obtain a JWT token by sending a POST request to `/login` with your email and password credentials.
+example:
+{  
   "email": "user@example.com",
   "password": "password123"
 }
-
-
-
-
-
-
 ## Registration
 
 To register a new user, send a POST request to `/register` with the following JSON payload:
 
-```json
-{
-  "username": "username123",
+
+{  
+  "name":"user",
   "email": "user@example.com",
   "password": "password123"
 }
-
 ## Endpoints
 
 ### UserView (GET):
@@ -87,3 +92,4 @@ To register a new user, send a POST request to `/register` with the following JS
 - Authentication errors return a 401 status code with a specific error message.
 - Validation errors return a 400 status code with detailed explanations.
 - Other errors return a 404 or 500 status code with an informative message.
+
