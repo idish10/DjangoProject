@@ -5,18 +5,6 @@ This document provides a comprehensive overview of the available API endpoints w
 ## Authentication
 
 To access most endpoints, valid JWT authentication is mandatory. You can obtain a JWT token by sending a POST request to `/login` with your email and password credentials.
-
-
-
-
-
-# Message API Readme
-
-This document provides a comprehensive overview of the available API endpoints within the message application.
-
-## Authentication
-
-To access most endpoints, valid JWT authentication is mandatory. You can obtain a JWT token by sending a POST request to `/login` with your email and password credentials.
 example:
 {  
   "email": "user@example.com",
