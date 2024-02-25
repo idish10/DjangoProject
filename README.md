@@ -60,7 +60,7 @@ To register a new user, send a POST request to `/register` with the following JS
 
 #### Response:
 
-- List of serialized unread message data.
+- List of serialized  message data.
 
 ### MessageView (DELETE):
 
