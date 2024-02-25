@@ -29,7 +29,7 @@ To register a new user, send a POST request to `/register` with the following JS
 
 #### Response:
 
-- List of serialized user data.
+- List of all serialized users .
 
 ### MessageView (POST):
 
