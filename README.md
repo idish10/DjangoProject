@@ -12,7 +12,7 @@ example:
 }
 ## Registration
 
-To register a new user, send a POST request to `/register` with the following JSON payload:
+To register a new user, send a POST request to `/register` with the following JSON payload example:
 
 
 {  
