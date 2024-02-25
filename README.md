@@ -24,7 +24,7 @@ To register a new user, send a POST request to `/register` with the following JS
 
 ### UserView (GET):
 
-/users
+'/users'
 
 - Requires JWT authentication.
 - Retrieves a list of all registered users.
@@ -35,7 +35,7 @@ To register a new user, send a POST request to `/register` with the following JS
 
 ### MessageView (POST):
 
-/message
+'/message'
 
 - Creates a new message.
 - Requires JWT authentication.
